@@ -29,7 +29,7 @@ Protected dashboard (/dashboard), (/profile)
 
 Redirect if not authenticated
 
-Persist authenticated session
+Persist authenticated session for the whole session
 
 Prevent unauthenticated access to protected routes
 
