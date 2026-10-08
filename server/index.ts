@@ -69,7 +69,7 @@ The frontend handles:
 The backend handles:
 - Validating credentials
   - Setup a demo user with a username and hashed password
-- Creating the authenticated session/token
+- Creating the authenticated session/token (HttpOnly cookie)
 - Returning the user
 - Logout
 
