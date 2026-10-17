@@ -17,6 +17,7 @@ function Login() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, password }),
+      credentials: "include", // Tell the browser to save incoming cookies
     });
 
     setUsername("");

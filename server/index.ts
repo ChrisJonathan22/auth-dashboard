@@ -1,4 +1,5 @@
 import express from 'express';
+import bcrypt from 'bcryptjs';
 
 import type { Request, Response, ErrorRequestHandler } from 'express';
 
@@ -10,8 +11,14 @@ import path from 'path';
 import cors from 'cors';
 
 const userObj = {
-  username: "John",
-  password: "d9e6762dd1c8eaf6d61b3c6192fc408d4d6d5f1176d0c29169bc24e71c3f274ad27fcd5811b313d681f7e55ec02d73d499c95455b6b5bb503acf574fba8ffe85"
+  creadentials: {
+      username: "John",
+      password: "$2a$12$/Iqg8MFIkXslmeWk2T514.T.9T8XYjPYMrex6U7em4UaMhzpihxJi"
+  },
+  profileData: {
+    displayName: "John Doe",
+    profilePicture: "https://i.pravatar.cc/300?img=68",
+  }
 };
 
 const app = express();
@@ -33,14 +40,25 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   });
 }
 
-app.use(cors({origin: 'http://localhost:5173'}));
+app.use(cors({origin: 'http://localhost:5173', credentials: true}));
+
+// credentials: true, it allows cookies to cross from the backend port to the frontend port
 
 app.use(express.json());
 
 app.use('/dashboard', (req: Request, res: Response, next) => {
-  if (!req.headers.authorization) {
-    return res.status(401).json({error: "Unauthorised"});
+  // if (!req.headers.authorization) {
+  //   return res.status(401).json({error: "Unauthorised"});
+  // }
+
+  const token = req.cookies.session_token;
+
+  if (!token) {
+    return res.status(401).json({error: "Unauthorised: No session token found."});
   }
+
+  res.send('Welcome back! Your token is verified internally.');
+
   next();
 });
 
@@ -49,8 +67,10 @@ app.get('/', (req: Request, res: Response) => {
   // return res.send('Hello World!');
 });
 
-app.post('/auth/login', (req: Request, res: Response) => {
+app.post('/auth/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
+
+  console.log("Request:", req.body);
 
   if (!username || !password) {
     res.status(400).json({
@@ -60,9 +80,22 @@ app.post('/auth/login', (req: Request, res: Response) => {
     return;
   }
 
-  // return res.sendFile(path.join(__dirname, 'login.html'));
-  console.log("Request:", req.body);
-  return res.json({ auth: "Authenticated" });
+  if (username === userObj.creadentials.username && await bcrypt.compare(password, userObj.creadentials.password)) {
+    res.cookie('session_token', 'xyz123abc456', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 3600000
+    });
+
+    // return res.sendFile(path.join(__dirname, 'login.html'));
+  
+    return res.status(200).json({ message: "Login successful" });
+  } else {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  
 });
 
 app.use(errorHandler);
