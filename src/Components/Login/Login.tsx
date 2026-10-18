@@ -23,8 +23,16 @@ function Login() {
     setUsername("");
     setPassword("");
 
+    // console.log("Response:", response.json());
+
     return response.json();
   }
+
+  // if (document.cookie) {
+
+  // }
+
+  console.log(document.cookie);
 
   return (
     <>

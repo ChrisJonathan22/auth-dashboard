@@ -46,12 +46,14 @@ app.use(cors({origin: 'http://localhost:5173', credentials: true}));
 
 app.use(express.json());
 
-app.use('/dashboard', (req: Request, res: Response, next) => {
+app.get('/dashboard', (req: Request, res: Response, next) => {
   // if (!req.headers.authorization) {
   //   return res.status(401).json({error: "Unauthorised"});
   // }
 
   const token = req.cookies.session_token;
+
+  console.log("Token:", token);
 
   if (!token) {
     return res.status(401).json({error: "Unauthorised: No session token found."});
@@ -86,6 +88,13 @@ app.post('/auth/login', async (req: Request, res: Response) => {
       secure: false,
       sameSite: 'lax',
       maxAge: 3600000
+    });
+
+    res.cookie('is_logged_in', 'true', {
+      httpOnly: false, // Allows the frontend JS to read this specific cookie
+      secure: false,   
+      sameSite: 'lax',
+      maxAge: 3600000 
     });
 
     // return res.sendFile(path.join(__dirname, 'login.html'));

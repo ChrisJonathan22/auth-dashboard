@@ -18,7 +18,8 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-router": "^8.4.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
