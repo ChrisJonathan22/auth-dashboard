@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import LoginIcon from "@mui/icons-material/Login";
 import Stack from "@mui/material/Stack";
+import { useNavigate } from "react-router";
 import "./Login.css";
 
 function Login() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -28,11 +30,30 @@ function Login() {
     return response.json();
   }
 
-  // if (document.cookie) {
+  useEffect(() => {
+    async function checkSessionAndRedirect() {
+      const loginCookie = await cookieStore.get("is_logged_in");
 
-  // }
+      if (!loginCookie) return;
 
-  console.log(document.cookie);
+      try {
+        const response = await fetch("http://localhost:3000/auth/verify", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          return navigate("/dashboard", { replace: true });
+        } else {
+          await cookieStore.delete("is_logged_in");
+        }
+      } catch (error) {
+        console.log("Auth verification failed", error);
+      }
+    }
+
+    checkSessionAndRedirect();
+  }, [navigate]);
 
   return (
     <>

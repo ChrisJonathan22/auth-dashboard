@@ -1,9 +1,8 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
+import cookieParser from 'cookie-parser';
 
 import type { Request, Response, ErrorRequestHandler } from 'express';
-
-import fs from 'fs';
 
 import { fileURLToPath } from 'url';
 
@@ -40,6 +39,8 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   });
 }
 
+app.use(cookieParser());
+
 app.use(cors({origin: 'http://localhost:5173', credentials: true}));
 
 // credentials: true, it allows cookies to cross from the backend port to the frontend port
@@ -64,10 +65,17 @@ app.get('/dashboard', (req: Request, res: Response, next) => {
   next();
 });
 
-app.get('/', (req: Request, res: Response) => {
-    return res.redirect('/login');
-  // return res.send('Hello World!');
-});
+app.get('/auth/verify', (req: Request, res: Response, next) => {
+  console.log('Cookie: ', req.cookies);
+
+  const token = req.cookies.session_token;
+
+  if (!token) {
+    return res.status(401).json({error: "Unauthorised: No session token found."});
+  } else {
+    return res.status(200).json({message: 'Welcome back! Your token is verified internally.'});
+  }
+})
 
 app.post('/auth/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;

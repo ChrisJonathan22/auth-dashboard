@@ -14,6 +14,7 @@ function Dashboard() {
     <>
       <div className="login_container">
         <h1 id="title">Dashboard Page</h1>
+        <p>Welcome back! User</p>
 
         <Box
           component="form"
