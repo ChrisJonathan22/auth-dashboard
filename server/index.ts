@@ -15,7 +15,7 @@ const userObj = {
       password: "$2a$12$/Iqg8MFIkXslmeWk2T514.T.9T8XYjPYMrex6U7em4UaMhzpihxJi"
   },
   profileData: {
-    displayName: "John Doe",
+    displayName: "John Smith",
     profilePicture: "https://i.pravatar.cc/300?img=68",
   }
 };
@@ -58,10 +58,9 @@ app.get('/dashboard', (req: Request, res: Response, next) => {
 
   if (!token) {
     return res.status(401).json({error: "Unauthorised: No session token found."});
+  } else {
+      res.json({message: 'Welcome! Your token is verified internally.', userData: userObj.profileData});
   }
-
-  res.send('Welcome back! Your token is verified internally.');
-
   next();
 });
 
