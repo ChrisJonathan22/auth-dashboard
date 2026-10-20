@@ -31,6 +31,7 @@ function Dashboard() {
           return;
         } else {
           await cookieStore.delete("is_logged_in");
+          return navigate("/login", { replace: true });
         }
       } catch (error) {
         console.log("Auth verification failed", error);
