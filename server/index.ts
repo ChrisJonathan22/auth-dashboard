@@ -114,6 +114,26 @@ app.post('/auth/login', async (req: Request, res: Response) => {
   
 });
 
+app.post('/auth/logout', (req: Request, res: Response) => {
+  // Clear secure HttpOnly cookie
+
+  res.clearCookie('session_token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax'
+  });
+
+  // Clear the non-HttpOnly frontend cookie
+
+  res.clearCookie('is_logged_in', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax'
+  });
+
+  return res.status(200).json({ message: "Logged out successfully" });
+});
+
 app.use(errorHandler);
 
 app.listen(port, () => {

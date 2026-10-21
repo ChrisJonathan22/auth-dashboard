@@ -11,6 +11,7 @@ function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState();
 
   async function auth(username: string, password: string) {
     const response = await fetch("http://localhost:3000/auth/login", {
@@ -27,7 +28,14 @@ function Login() {
 
     // console.log("Response:", response.json());
 
-    return response.json();
+    if (response.ok) {
+      return navigate("/dashboard", { replace: true });
+    } else {
+      await cookieStore.delete("is_logged_in");
+      const errorResponse = await response.json();
+      setError(errorResponse.message);
+      return;
+    }
   }
 
   useEffect(() => {
@@ -98,6 +106,7 @@ function Login() {
             >
               Login
             </Button>
+            {error ? error : null}
           </Stack>
         </Box>
       </div>
