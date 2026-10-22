@@ -26,8 +26,6 @@ function Login() {
     setUsername("");
     setPassword("");
 
-    // console.log("Response:", response.json());
-
     if (response.ok) {
       return navigate("/dashboard", { replace: true });
     } else {
@@ -67,7 +65,6 @@ function Login() {
     <>
       <div className="login_container">
         <h1 id="title">Login Page</h1>
-
         <Box
           component="form"
           sx={{ "& > :not(style)": { m: 1, width: "25ch" } }}
@@ -95,7 +92,6 @@ function Login() {
               return setPassword(e.target.value);
             }}
           />
-
           <Stack direction="row" spacing={2}>
             <Button
               variant="contained"
@@ -106,8 +102,8 @@ function Login() {
             >
               Login
             </Button>
-            {error ? error : null}
           </Stack>
+          {error ? <p className="error">{error}</p> : null}
         </Box>
       </div>
     </>

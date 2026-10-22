@@ -1,12 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import cookieParser from 'cookie-parser';
-
 import type { Request, Response, ErrorRequestHandler } from 'express';
-
-import { fileURLToPath } from 'url';
-
-import path from 'path';
 import cors from 'cors';
 
 const userObj = {
@@ -23,12 +18,7 @@ const userObj = {
 const app = express();
 const port = 3000;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.log(err);
-
   if (res.headersSent) {
     next(err);
     return;
@@ -48,13 +38,7 @@ app.use(cors({origin: 'http://localhost:5173', credentials: true}));
 app.use(express.json());
 
 app.get('/dashboard', (req: Request, res: Response, next) => {
-  // if (!req.headers.authorization) {
-  //   return res.status(401).json({error: "Unauthorised"});
-  // }
-
   const token = req.cookies.session_token;
-
-  console.log("Token:", token);
 
   if (!token) {
     return res.status(401).json({error: "Unauthorised: No session token found."});
@@ -65,8 +49,6 @@ app.get('/dashboard', (req: Request, res: Response, next) => {
 });
 
 app.get('/auth/verify', (req: Request, res: Response, next) => {
-  console.log('Cookie: ', req.cookies);
-
   const token = req.cookies.session_token;
 
   if (!token) {
@@ -78,8 +60,6 @@ app.get('/auth/verify', (req: Request, res: Response, next) => {
 
 app.post('/auth/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
-
-  console.log("Request:", req.body);
 
   if (!username || !password) {
     res.status(400).json({
@@ -103,15 +83,11 @@ app.post('/auth/login', async (req: Request, res: Response) => {
       sameSite: 'lax',
       maxAge: 3600000 
     });
-
-    // return res.sendFile(path.join(__dirname, 'login.html'));
   
     return res.status(200).json({ message: "Login successful" });
   } else {
     return res.status(401).json({ message: "Invalid credentials" });
   }
-
-  
 });
 
 app.post('/auth/logout', (req: Request, res: Response) => {
@@ -139,38 +115,3 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port},`);
 });
-
-
-/*
-
-To-do
-
-
-Log in (/login)
-
-Log out
-
-Protected dashboard (/dashboard), (/profile)
-
-Redirect if not authenticated
-
-Persist authenticated session for the whole session
-
-Prevent unauthenticated access to protected routes
-
-
-The frontend handles:
-- Login form
-- Routing
-- Protected routes
-- Auth state
-- Dashboard
-
-The backend handles:
-- Validating credentials
-  - Setup a demo user with a username and hashed password
-- Creating the authenticated session/token (HttpOnly cookie)
-- Returning the user
-- Logout
-
-*/
